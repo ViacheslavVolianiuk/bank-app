@@ -68,13 +68,40 @@ const displayMovements = function (movements) {
     const html = `
   <div class="movements__row">
     <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
-    <div class="movements__value">${mov}</div>
+    <div class="movements__value">${mov} EUR </div>
   </div>`;
 
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
 displayMovements(account1.movements);
+
+const createUsernames = function (accs) {
+  accs.forEach(function (acc) {
+    acc.username = acc.owner
+      .toLowerCase()
+      .split(' ')
+      .map(name => name[0])
+      .join('');
+  });
+};
+createUsernames(accounts);
+
+const calcAndDisplayBalance = function (movements) {
+  const balance = movements.reduce((acc, mov) => {
+    return (acc += mov);
+  }, 0);
+  labelBalance.textContent = `${balance} EUR`;
+};
+calcAndDisplayBalance(account1.movements);
+
+const calcDisplaySummary = function (movements) {
+  const incomes = movements
+    .filter(mov => mov > 0)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumIn.textContent = `${incomes} EUR`;
+};
+calcDisplaySummary(account1.movements);
 
 const currencies = new Map([
   ['USD', 'United States dollar'],
