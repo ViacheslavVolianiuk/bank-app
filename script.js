@@ -68,14 +68,14 @@ const displayMovements = function (movements) {
     const html = `
   <div class="movements__row">
     <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
-    <div class="movements__value">${mov} EUR </div>
+    <div class="movements__value">${mov}€ </div>
   </div>`;
 
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
-displayMovements(account1.movements);
 
+//Function which creates usernames for login and also adds a username proterty to each user
 const createUsernames = function (accs) {
   accs.forEach(function (acc) {
     acc.username = acc.owner
@@ -87,21 +87,104 @@ const createUsernames = function (accs) {
 };
 createUsernames(accounts);
 
-const calcAndDisplayBalance = function (movements) {
-  const balance = movements.reduce((acc, mov) => {
+//Update UI function
+const updateUI = function (acc) {
+  //Display balance
+  calcAndDisplayBalance(acc);
+  //Display summary
+  calcDisplaySummary(acc);
+  //Display movements
+  displayMovements(acc.movements);
+};
+
+//Disolay balance
+const calcAndDisplayBalance = function (acc) {
+  acc.balance = acc.movements.reduce((acc, mov) => {
     return (acc += mov);
   }, 0);
-  labelBalance.textContent = `${balance} EUR`;
-};
-calcAndDisplayBalance(account1.movements);
 
-const calcDisplaySummary = function (movements) {
-  const incomes = movements
+  labelBalance.textContent = `${acc.balance}€`;
+};
+
+//Display summary in and out
+const calcDisplaySummary = function (acc) {
+  const incomes = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${incomes} EUR`;
+  labelSumIn.textContent = `${incomes}€`;
+  const outcomes = acc.movements
+    .filter(mov => mov < 0)
+    .reduce((acc, mov) => acc + mov, 0);
+  labelSumOut.textContent = `${Math.abs(outcomes)}€`;
+  const interest = acc.movements
+    .filter(mov => mov > 0)
+    .map(deposit => (deposit * acc.interestRate) / 100)
+    .reduce((acc, int) => acc + int, 0);
+  labelSumInterest.textContent = `${Math.ceil(interest)}€`;
 };
-calcDisplaySummary(account1.movements);
+
+//Event handler for login
+let currentAccount;
+
+btnLogin.addEventListener('click', function (e) {
+  e.preventDefault();
+  currentAccount = accounts.find(
+    acc => acc.username === inputLoginUsername.value
+  );
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    containerApp.style.opacity = 100;
+    labelWelcome.textContent = `Welcome back, ${
+      currentAccount.owner.split(' ')[0]
+    }`;
+    //clear input fields
+    inputLoginUsername.value = inputLoginPin.value = '';
+    inputLoginPin.blur();
+    //Update UI
+    updateUI(currentAccount);
+  } else {
+    alert('Wrong username or password');
+  }
+});
+
+//Transfer money to another account
+btnTransfer.addEventListener('click', function (e) {
+  e.preventDefault();
+  const amount = Number(inputTransferAmount.value);
+  const receiverAcc = accounts.find(
+    acc => acc.username === inputTransferTo.value
+  );
+  inputTransferAmount.value = inputTransferTo.value = '';
+  if (
+    amount > 0 &&
+    receiverAcc &&
+    currentAccount.balance >= amount &&
+    receiverAcc?.username !== currentAccount.username
+  ) {
+    //Doing the transfer
+    currentAccount.movements.push(-amount);
+    receiverAcc.movements.push(amount);
+    //Update UI after transfering money
+    updateUI(currentAccount);
+  }
+});
+//Closing an account (deleting it)
+btnClose.addEventListener('click', function (e) {
+  e.preventDefault();
+  if (
+    inputCloseUsername.value === currentAccount.username &&
+    Number(inputClosePin.value) === currentAccount.pin
+  ) {
+    const index = accounts.findIndex(
+      acc => acc.username === currentAccount.username
+    );
+    //deleting account
+    accounts.splice(index, 1);
+    //hiding ui
+    containerApp.style.opacity = 0;
+    labelWelcome.textContent = 'Log in to get started';
+  }
+  inputCloseUsername.value = inputClosePin.value = '';
+});
 
 const currencies = new Map([
   ['USD', 'United States dollar'],
