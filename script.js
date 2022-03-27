@@ -145,6 +145,26 @@ btnLogin.addEventListener('click', function (e) {
     alert('Wrong username or password');
   }
 });
+let loanReq = { loanReq: 0 };
+//Loan request
+btnLoan.addEventListener('click', function (e) {
+  e.preventDefault();
+  const amount = Number(inputLoanAmount.value);
+  if (
+    amount > 0 &&
+    loanReq.loanReq < 1 &&
+    currentAccount.movements.some(mov => mov >= amount * 0.1)
+  ) {
+    //Add movement
+    currentAccount.movements.push(amount);
+    updateUI(currentAccount);
+    loanReq.loanReq++;
+    console.log(loanReq.loanReq);
+  } else if (loanReq.loanReq >= 1) {
+    alert('Only one loan');
+  }
+  inputLoanAmount.value = '';
+});
 
 //Transfer money to another account
 btnTransfer.addEventListener('click', function (e) {
