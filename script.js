@@ -61,9 +61,11 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort = false) {
   containerMovements.innerHTML = '';
-  movements.forEach((mov, i) => {
+
+  const movs = sort ? [...movements].sort((a, b) => a - b) : movements;
+  movs.forEach((mov, i) => {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
     const html = `
   <div class="movements__row">
@@ -145,6 +147,7 @@ btnLogin.addEventListener('click', function (e) {
     alert('Wrong username or password');
   }
 });
+//Number of loan requests must be = 1
 let loanReq = { loanReq: 0 };
 //Loan request
 btnLoan.addEventListener('click', function (e) {
@@ -204,6 +207,14 @@ btnClose.addEventListener('click', function (e) {
     labelWelcome.textContent = 'Log in to get started';
   }
   inputCloseUsername.value = inputClosePin.value = '';
+});
+
+//Sorting
+let sorted = false;
+btnSort.addEventListener('click', function (e) {
+  e.preventDefault();
+  displayMovements(currentAccount.movements, !sorted);
+  sorted = !sorted;
 });
 
 const currencies = new Map([
