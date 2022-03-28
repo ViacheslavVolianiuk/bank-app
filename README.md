@@ -5,4 +5,4 @@ user: sv &emsp; pin: 1111 <br />
 user: jd &emsp; pin: 2222 <br />
 user: stw &emsp; pin: 3333 <br />
 user: ss &emsp; pin: 4444 <br />
-bank-slava.netlify.app
+https://bank-slava.netlify.app
