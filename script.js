@@ -157,6 +157,27 @@ const updateUI = function (acc) {
   displayMovements(acc);
 };
 
+const startLogOutTimer = function () {
+  const tick = function () {
+    const min = String(Math.trunc(time / 60)).padStart(2, 0);
+    const sec = String(time % 60).padStart(2, 0);
+    labelTimer.textContent = `${min}:${sec}`;
+    // Log out when time = 0
+    if (time === 0) {
+      clearInterval(timer);
+      //hiding ui
+      containerApp.style.opacity = 0;
+      labelWelcome.textContent = 'Log in to get started';
+    }
+    time--;
+  };
+  // set time to 5 min
+  let time = 300;
+  tick();
+  //Call the timer ever second
+  const timer = setInterval(tick, 1000);
+};
+
 //Disolay balance
 const calcAndDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, mov) => {
@@ -207,6 +228,8 @@ btnLogin.addEventListener('click', function (e) {
     const hour = `${now.getHours()}`.padStart(2, 0);
     const min = `${now.getMinutes()}`.padStart(2, 0);
     labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
+    //start timer
+    startLogOutTimer();
     //Update UI
     updateUI(currentAccount);
   } else {
