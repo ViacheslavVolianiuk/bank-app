@@ -204,8 +204,8 @@ btnLogin.addEventListener('click', function (e) {
     const day = `${now.getDate()}`.padStart(2, 0);
     const month = `${now.getMonth() + 1}`.padStart(2, 0);
     const year = now.getFullYear();
-    const hour = now.getHours();
-    const min = now.getMinutes();
+    const hour = `${now.getHours()}`.padStart(2, 0);
+    const min = `${now.getMinutes()}`.padStart(2, 0);
     labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
     //Update UI
     updateUI(currentAccount);
@@ -224,13 +224,15 @@ btnLoan.addEventListener('click', function (e) {
     loanReq.loanReq < 1 &&
     currentAccount.movements.some(mov => mov >= amount * 0.1)
   ) {
-    //Add movement
-    currentAccount.movements.push(amount);
-    //Add loan date
-    currentAccount.movementsDates.push(new Date());
-    updateUI(currentAccount);
-    loanReq.loanReq++;
-    console.log(loanReq.loanReq);
+    setTimeout(function () {
+      //Add movement
+      currentAccount.movements.push(amount);
+      //Add loan date
+      currentAccount.movementsDates.push(new Date().toISOString());
+      updateUI(currentAccount);
+      loanReq.loanReq++;
+      console.log(loanReq.loanReq);
+    }, 3000);
   } else if (loanReq.loanReq >= 1) {
     alert('Only one loan');
   }
@@ -255,8 +257,8 @@ btnTransfer.addEventListener('click', function (e) {
     currentAccount.movements.push(-amount);
     receiverAcc.movements.push(amount);
     //Add transfer date
-    currentAccount.movementsDates.push(new Date());
-    receiverAcc.movementsDates.push(new Date());
+    currentAccount.movementsDates.push(new Date().toISOString());
+    receiverAcc.movementsDates.push(new Date().toISOString());
 
     //Update UI after transfering money
     updateUI(currentAccount);
