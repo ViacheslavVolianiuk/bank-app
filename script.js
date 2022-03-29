@@ -172,10 +172,11 @@ const startLogOutTimer = function () {
     time--;
   };
   // set time to 5 min
-  let time = 300;
+  let time = 600;
   tick();
   //Call the timer ever second
   const timer = setInterval(tick, 1000);
+  return timer;
 };
 
 //Disolay balance
@@ -205,7 +206,7 @@ const calcDisplaySummary = function (acc) {
 };
 
 //Event handler for login
-let currentAccount;
+let currentAccount, timer;
 
 btnLogin.addEventListener('click', function (e) {
   e.preventDefault();
@@ -229,7 +230,10 @@ btnLogin.addEventListener('click', function (e) {
     const min = `${now.getMinutes()}`.padStart(2, 0);
     labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
     //start timer
-    startLogOutTimer();
+    if (timer) {
+      clearInterval(timer);
+    }
+    timer = startLogOutTimer();
     //Update UI
     updateUI(currentAccount);
   } else {
